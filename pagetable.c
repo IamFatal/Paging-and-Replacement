@@ -32,6 +32,7 @@ int allocate_frame(pgtbl_entry_t *p) {
 			break;
 		}
 	}
+    
 	if(frame == -1) { // Didn't find a free page.
 		// Call replacement algorithm's evict function to select victim
 		frame = evict_fcn();
@@ -39,8 +40,29 @@ int allocate_frame(pgtbl_entry_t *p) {
 		// All frames were in use, so victim frame must hold some page
 		// Write victim page to swap, if needed, and update pagetable
 		// IMPLEMENTATION NEEDED
-
-
+        
+        pgtbl_entry_t* victim = coremap[frame].pte;
+        
+        if (victim->frame & ~PG_DIRTY) { // clean victim frame
+            // mark frame invalid
+            victim->frame &= ~PG_VALID;
+            
+            // increment clean eviction counter
+            evict_clean_count++;
+            
+        } else { // dirty victim frame
+            // swap page to swapfile, update victim's swap offset
+            int new_swap_off;
+            new_swap_off = swap_pageout(frame, victim->swap_off);
+            victim->swap_off = new_swap_off;
+            
+            // mark frame invalid and on swap
+            victim->frame &= ~PG_VALID;
+            victim->frame |= PG_ONSWAP;
+            
+            // increment dirty eviction counter
+            evict_dirty_count++;
+        }
 	}
 
 	// Record information for virtual page that will now be stored in frame
