@@ -4,7 +4,8 @@
 #include <getopt.h>
 #include <stdlib.h>
 #include "pagetable.h"
-
+#include <stdbool.h>
+#include <string.h>
 
 extern int memsize;
 
@@ -22,7 +23,6 @@ bool* refbits;
  * Returns the page frame number (which is also the index in the coremap)
  * for the page that is to be evicted.
  */
-
 int clock_evict() {
 	// find first ref bit that is off
     // i.e. hasn't been used recently
@@ -42,6 +42,7 @@ int clock_evict() {
     }
     
     // shouldn't get here
+    return 0;
 }
 
 /* This function is called on each access to a page to update any information

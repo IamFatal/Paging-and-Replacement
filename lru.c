@@ -13,13 +13,13 @@ extern int debug;
 extern struct frame *coremap;
 
 // make queue using linked list
-struct node {
+typedef struct node_t {
     int frame;          // page frame number
-    struct node* next;  // pointer to next node
-};
+    struct node_t *next;  // pointer to next node
+} node;
 
-node* head; // head of lru queue, evict page
-node* tail; // tail of lru queue, insert page
+node *head; // head of lru queue, evict page
+node *tail; // tail of lru queue, insert page
 
 /* Page to evict is chosen using the accurate LRU algorithm.
  * Returns the page frame number (which is also the index in the coremap)
@@ -35,7 +35,7 @@ int lru_evict() {
         tail = NULL;
 
     // remove head, update list
-    new_head = head->next;
+    node *new_head = head->next;
     free(head);
     head = new_head;
     
@@ -51,7 +51,7 @@ void lru_ref(pgtbl_entry_t *p) {
 	int frame = p->frame >> PAGE_SHIFT;
     
     // create a new node
-    node* new_node = malloc(sizeof(node));
+    node *new_node = malloc(sizeof(node));
     new_node->frame = frame;
     new_node->next = NULL;
     
@@ -63,8 +63,8 @@ void lru_ref(pgtbl_entry_t *p) {
     }
     
     // remove last reference of frame from list, if it exists
-    node* curr = head;  // track current node
-    node* prev = NULL;  // track previous node
+    node *curr = head;  // track current node
+    node *prev = NULL;  // track previous node
     while (curr) {
         if (curr->frame == frame) { // frame already in list
             if (!prev) { // deleting head of list
