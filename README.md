@@ -1,7 +1,8 @@
 # Page Tables and Replacement Algorithms
 An assignment for CSC369. Note to UofT students, please **do not plagarize**. MarkUs ***will*** catch you.  
 ---
-This program simulate the operations of page tables and page replacement. We implemented virtual-to-physical address translation and demand paging using a two-level page table and four different page replacement algorithms: FIFO, Clock, exact LRU, and OPT. 
+### Description
+This program simulates the operations of page tables and page replacement. We implemented virtual-to-physical address translation and demand paging using a two-level page table and four different page replacement algorithms: FIFO, Clock, exact LRU, and OPT. 
 
 The main driver for the memory simulator, sim.c, reads memory reference traces in the format produced by the fastslim.py tool from valgrind memory traces. For each line in the trace, the program asks for the simulated physical address that corresponds to the given virtual address by calling find_physpage, and then reads from that location. If the access type is a write ("M" for modify or "S" for store), it will also write to the location. 
 
@@ -12,7 +13,7 @@ The simulator is executed as `./sim -f <tracefile> -m <memory size> -s <swapfile
 **Example call:** `./sim -f tr-blocked.ref -m 50 -s 3000 -a clock`
 ________________________________________________________________________________
 
-## Task 2: TABLES
+### Comparing Algorithms
 ```
 ________________________________________________________________________________
 
@@ -175,9 +176,8 @@ lru     98.08       6348        124         0           0           0
 clock   98.08       6348        124         0           0           0
 opt     98.08       6348        124         0           0           0
 ________________________________________________________________________________
-
-    COMPARING ALGORITHMS
-________________________________________________________________________________
+```
+### Conclusion
 
 As expected, we see that: FIFO < LRU = CLOCK < OPT.
 
@@ -193,22 +193,3 @@ poorly in these traces since it cannot utilize locality to optimize. However,
 in matmul, where the data is generated dynamically and more likely to result in
 non-contiguous data, locality is reduced and these algorithms end up performing
 worse than RAND, which doesn't rely on locality.
-________________________________________________________________________________
-
-    LRU AS MEMORY SIZE INCREASES
-________________________________________________________________________________
-
-table: LRU hit-rates per program
-
-            50      100     150     200
-simpleloop  76.42   77.23   77.25   77.25
-matmul      63.96   65.16   96.86   98.86
-blocked     99.78   99.84   99.84   99.84
-sumprime    97.12   98.06   98.08   98.08
-
-Generally, as the memory size increases, so does hit rate. LRU makes use of
-locality and is good at analyzing past use to evict the optimal page. When a 
-page needs to be evicted, LRU selects the page which hasn't been used for the
-longest period of time. With increased memory size, more pages are stored in 
-memory so we have more data to work with and this leads to increased precision
-in the eviction process and increased hit rates.
